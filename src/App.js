@@ -1,26 +1,26 @@
 import React, { Component } from 'react'
-import { bindActionCreators } from 'redux';
+import { compose } from 'redux';
 import { connect } from "react-redux";
-import * as noteActions from './actions/noteActions'
+import { firestoreConnect } from 'react-redux-firebase'
 
 export class App extends Component {
 
 
   constructor(props) {
     super(props);
-    
-      this.state = {
-        notes: []
-      }
+
   }
    
   
   render() {
-    const actions = bindActionCreators(noteActions, this.props.dispatch);
     return (
       <div>
-         {this.props.notes.map((note, index) => (
-        <p>Hello, {note.title} from {note.content}!</p>
+        {this.props.notes.map((note, index) => (
+        <p key={index} >Hello, {note.title} from {note.content}!</p>
+        ))}
+        
+        {this.props.online_notes.map((note, index) => (
+        <p key={index} >Hello, {note.title} from {note.content}!</p>
         ))}
       </div>
     )
@@ -29,11 +29,29 @@ export class App extends Component {
 }
 
 
-const mapStateToProps = state => ({
-  notes: state.notes.notes_list,
-});
+// const mapStateToProps = state =>{
+//   console.log(state.firestore.ordered)
+//     return {
+//       notes: state.notes.notes_list,
+//       online_notes:state.firestore.ordered.notes
+//   }
+ 
+// };
 
-
-export default connect(
-  mapStateToProps,
+export default compose(firestoreConnect(()=>['notes']),
+  connect((state)=>({
+    notes:state.notes.notes_list,
+    online_notes:state.firestore.ordered.notes
+  }))
 )(App)
+
+
+// const mapStateToProps = state => ({
+//   notes: state.notes.notes_list,
+//   notes:state.firestore.data.notes
+// });
+
+
+// export default connect(
+//   mapStateToProps,
+// )(App)
